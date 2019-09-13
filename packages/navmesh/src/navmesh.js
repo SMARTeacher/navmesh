@@ -37,7 +37,7 @@ export default class NavMesh {
 
     this._navPolygons = newPolys.map((polygon, i) => new NavPoly(i, polygon));
 
-    this._calculateNeighbors();
+    this._calculateAllNeighbors();
 
     // Astar graph of connections between polygons
     this._graph = new NavGraph(this._navPolygons);
@@ -51,6 +51,20 @@ export default class NavMesh {
    */
   getPolygons() {
     return this._navPolygons;
+  }
+
+  /**
+   * 
+   * @param {object[]} polyPoints  Array where each element is a point-like object that defines a polygon.
+   */
+  addPolygon(polyPoints) {
+    const newPoly = new NavPoly(this._navPolygons.length, new Polygon(polyPoints.map(p => new Vector2(p.x, p.y))));
+    this._navPolygons.push(newPoly);
+    this._calculatePolyNeighbors(newPoly);
+  }
+
+  removePolygon(index) {
+    this._navPolygons.splice(index, 1);
   }
 
   /**
@@ -185,7 +199,7 @@ export default class NavMesh {
     return phaserPath;
   }
 
-  _calculateNeighbors() {
+  _calculateAllNeighbors() {
     // Fill out the neighbor information for each navpoly
     for (let i = 0; i < this._navPolygons.length; i++) {
       const navPoly = this._navPolygons[i];
@@ -193,53 +207,67 @@ export default class NavMesh {
       for (let j = i + 1; j < this._navPolygons.length; j++) {
         const otherNavPoly = this._navPolygons[j];
 
-        // Check if the other navpoly is within range to touch
-        const d = navPoly.centroid.distance(otherNavPoly.centroid);
-        if (d > navPoly.boundingRadius + otherNavPoly.boundingRadius) continue;
+        this._calculatePairNeighbors(navPoly, otherNavPoly);
+      }
+    }
+  }
 
-        // The are in range, so check each edge pairing
-        for (const edge of navPoly.edges) {
-          for (const otherEdge of otherNavPoly.edges) {
-            // If edges aren't collinear, not an option for connecting navpolys
-            if (!areCollinear(edge, otherEdge)) continue;
+  _calculatePolyNeighbors(navPoly) {
+    for (let i = 0; i < this._navPolygons.length; ++i) {
+      const otherNavPoly = this._navPolygons[i];
 
-            // If they are collinear, check if they overlap
-            const overlap = this._getSegmentOverlap(edge, otherEdge);
-            if (!overlap) continue;
+      if (navPoly !== otherNavPoly) {
+        this._calculatePairNeighbors(navPoly, otherNavPoly);
+      }
+    }
+  }
 
-            // Connections are symmetric!
-            navPoly.neighbors.push(otherNavPoly);
-            otherNavPoly.neighbors.push(navPoly);
+  _calculatePairNeighbors(navPoly, otherNavPoly) {
+    // Check if the other navpoly is within range to touch
+    const d = navPoly.centroid.distance(otherNavPoly.centroid);
+    if (d > navPoly.boundingRadius + otherNavPoly.boundingRadius) return;
 
-            // Calculate the portal between the two polygons - this needs to be in
-            // counter-clockwise order, relative to each polygon
-            const [p1, p2] = overlap;
-            let edgeStartAngle = navPoly.centroid.angle(edge.start);
-            let a1 = navPoly.centroid.angle(overlap[0]);
-            let a2 = navPoly.centroid.angle(overlap[1]);
-            let d1 = angleDifference(edgeStartAngle, a1);
-            let d2 = angleDifference(edgeStartAngle, a2);
-            if (d1 < d2) {
-              navPoly.portals.push(new Line(p1.x, p1.y, p2.x, p2.y));
-            } else {
-              navPoly.portals.push(new Line(p2.x, p2.y, p1.x, p1.y));
-            }
+    // The are in range, so check each edge pairing
+    for (const edge of navPoly.edges) {
+      for (const otherEdge of otherNavPoly.edges) {
+        // If edges aren't collinear, not an option for connecting navpolys
+        if (!areCollinear(edge, otherEdge)) continue;
 
-            edgeStartAngle = otherNavPoly.centroid.angle(otherEdge.start);
-            a1 = otherNavPoly.centroid.angle(overlap[0]);
-            a2 = otherNavPoly.centroid.angle(overlap[1]);
-            d1 = angleDifference(edgeStartAngle, a1);
-            d2 = angleDifference(edgeStartAngle, a2);
-            if (d1 < d2) {
-              otherNavPoly.portals.push(new Line(p1.x, p1.y, p2.x, p2.y));
-            } else {
-              otherNavPoly.portals.push(new Line(p2.x, p2.y, p1.x, p1.y));
-            }
+        // If they are collinear, check if they overlap
+        const overlap = this._getSegmentOverlap(edge, otherEdge);
+        if (!overlap) continue;
 
-            // Two convex polygons shouldn't be connected more than once! (Unless
-            // there are unnecessary vertices...)
-          }
+        // Connections are symmetric!
+        navPoly.neighbors.push(otherNavPoly);
+        otherNavPoly.neighbors.push(navPoly);
+
+        // Calculate the portal between the two polygons - this needs to be in
+        // counter-clockwise order, relative to each polygon
+        const [p1, p2] = overlap;
+        let edgeStartAngle = navPoly.centroid.angle(edge.start);
+        let a1 = navPoly.centroid.angle(overlap[0]);
+        let a2 = navPoly.centroid.angle(overlap[1]);
+        let d1 = angleDifference(edgeStartAngle, a1);
+        let d2 = angleDifference(edgeStartAngle, a2);
+        if (d1 < d2) {
+          navPoly.portals.push(new Line(p1.x, p1.y, p2.x, p2.y));
+        } else {
+          navPoly.portals.push(new Line(p2.x, p2.y, p1.x, p1.y));
         }
+
+        edgeStartAngle = otherNavPoly.centroid.angle(otherEdge.start);
+        a1 = otherNavPoly.centroid.angle(overlap[0]);
+        a2 = otherNavPoly.centroid.angle(overlap[1]);
+        d1 = angleDifference(edgeStartAngle, a1);
+        d2 = angleDifference(edgeStartAngle, a2);
+        if (d1 < d2) {
+          otherNavPoly.portals.push(new Line(p1.x, p1.y, p2.x, p2.y));
+        } else {
+          otherNavPoly.portals.push(new Line(p2.x, p2.y, p1.x, p1.y));
+        }
+
+        // Two convex polygons shouldn't be connected more than once! (Unless
+        // there are unnecessary vertices...)
       }
     }
   }
