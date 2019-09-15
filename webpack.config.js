@@ -9,29 +9,36 @@ module.exports = function(env, argv) {
 
   return {
     context: path.join(root, "src"),
-    entry: {
-      "phaser2-navmesh": "./index.js",
-      "phaser2-navmesh.min": "./index.js"
-    },
+    entry: [
+      "./index.ts"
+    ],
     output: {
       filename: "[name].js",
       path: path.resolve(root, "dist"),
-      library: "Phaser2NavMeshPlugin",
+      library: "NavMesh",
       libraryTarget: "umd",
-      libraryExport: "default"
+      libraryExport: "default",
+      globalObject: '(typeof self !== "undefined" ? self : this)'
+    },
+    resolve: {
+      extensions: ['.js', '.ts']
     },
     optimization: {
       minimizer: [new UglifyJsPlugin({ include: /\.min\.js$/, sourceMap: true })]
-    },
-    externals: {
-      phaser: "Phaser"
     },
     module: {
       rules: [
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: { loader: "babel-loader", options: { root: "../../" } }
+          use: { loader: "babel-loader" }
+        },
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'ts-loader'
+          }
         }
       ]
     },
