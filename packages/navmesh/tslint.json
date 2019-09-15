@@ -1,0 +1,93 @@
+{
+  "extends": "tslint:all",
+  "rules": {
+    "member-ordering": false,
+    "no-inferrable-types": false,
+    "prefer-function-over-method": false,
+    "no-unnecessary-class": false,
+    "no-trailing-whitespace": [ true, "ignore-blank-lines" ],
+    "quotemark": [ true, "single" ],
+    "no-null-keyword": false,
+    "comment-format": [true, "check-space"],
+    "no-implicit-dependencies": [true, "dev"],
+    "prefer-conditional-expression": false,
+    "no-unused-expression": false,
+    "no-unused-variable": true,
+    "interface-over-type-literal": false,
+    "no-magic-numbers": false,
+    "trailing-comma":  [ true, { "multiline": "never", "singleline": "never"  }],
+    "newline-before-return": false,
+    "increment-decrement": false,
+    "file-name-casing": [true, {"index": "snake-case", ".ts": "pascal-case"}],
+    "no-use-before-declare": false,
+    "triple-equals": true,
+    "strict-comparisons": false,
+    "unnecessary-else": false,
+    "ordered-imports": [true, { "grouped-imports": false }],
+    "static-this": false,
+    "no-default-import": false,
+    "no-async-without-await": false,
+    "switch-final-break": false,
+    "no-shadowed-variable": false,
+    "no-unsafe-any": false,
+    "typedef": [ true, "call-signature", "parameter", "arrow-parameter", "property-declaration", "variable-declaration", "member-variable-declaration", "object-destructuring", "array-destructuring" ],
+    "prefer-for-of": false,
+    "strict-type-predicates": false,
+    "no-boolean-literal-compare": false,
+    "no-inferred-empty-object-type": false,
+    "max-line-length": false,
+    "no-bitwise": false,
+    "deprecation": { "severity": "warning" },
+    "object-literal-sort-keys": false,
+    "forin": false,
+    "switch-default": false,
+    "no-unbound-method": false,
+    "no-any": false,
+    "radix": false,
+    "linebreak-style": false,
+    "no-string-literal": false,
+    "no-require-imports": false,
+    "strict-boolean-expressions": [
+      true,
+      "allow-null-union",
+      "allow-undefined-union",
+      "allow-string"
+    ],
+    "cyclomatic-complexity": false,
+    "no-default-export": { "severity": "warning" },
+    "max-file-line-count": { "severity": "warning", "options": 1000 },
+    "prefer-switch": false,
+    "no-floating-promises": { "severity": "warning" },
+    "no-unnecessary-type-assertion": false,
+    "restrict-plus-operands": false,
+    "no-object-literal-type-assertion": false,
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    "newline-per-chained-call": { "severity": "warning" },
+    "prefer-readonly": { "severity": "warning" },
+    "completed-docs": [true, {
+			"classes": {},
+			"functions": {},
+			"methods": {
+				"locations": "instance"
+			},
+			"namespaces": {},
+			"properties": {
+				"locations": "instance"
+			},
+			"variables": {}
+		}],
+    "no-dynamic-delete": { "severity": "warning" },
+    "number-literal-format": { "severity": "warning" }
+  },
+  "jsRules": {
+    "quotemark": [ true, "single" ],
+    "no-magic-numbers": false
+  },
+  "linterOptions": {
+    "exclude": [
+      "test/**",
+      "dts/**",
+      "lib/**"
+    ]
+  }
+}

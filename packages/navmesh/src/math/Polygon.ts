@@ -1,4 +1,5 @@
-import Line from "./line";
+import Line from "./Line";
+import Vector2 from "./Vector2";
 
 /**
  * Stripped down version of Phaser's Polygon with just the functionality needed for navmeshes
@@ -7,8 +8,9 @@ import Line from "./line";
  * @class Polygon
  */
 export default class Polygon {
-  constructor(points, closed = true) {
-    this.points = points;
+  public edges: Line[];
+
+  public constructor(public points: Vector2[], closed: boolean = true) {
     this.edges = [];
 
     for (let i = 1; i < points.length; i++) {
@@ -23,7 +25,7 @@ export default class Polygon {
     }
   }
 
-  contains(x, y) {
+  public contains(x: number, y: number): boolean {
     let inside = false;
 
     for (let i = -1, j = this.points.length - 1; ++i < this.points.length; j = i) {

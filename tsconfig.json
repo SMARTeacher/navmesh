@@ -1,9 +1,29 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "allowSyntheticDefaultImports": true, // Necessary for default importing Phaser to pick up types properly
-    "allowJs": true,
-    "checkJs": false
+    "moduleResolution": "node",
+    "target": "es5",
+    "module": "commonjs",
+    "removeComments": true,
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "types": [
+      "node"
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
-  "include": ["src/**/*", "types/**/*"]
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "**/*.ts"
+  ]
 }

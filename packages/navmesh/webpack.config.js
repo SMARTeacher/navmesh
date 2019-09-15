@@ -9,10 +9,9 @@ module.exports = function(env, argv) {
 
   return {
     context: path.join(root, "src"),
-    entry: {
-      navmesh: "./index.js",
-      "navmesh.min": "./index.js"
-    },
+    entry: [
+      "./index.ts"
+    ],
     output: {
       filename: "[name].js",
       path: path.resolve(root, "dist"),
@@ -20,6 +19,9 @@ module.exports = function(env, argv) {
       libraryTarget: "umd",
       libraryExport: "default",
       globalObject: '(typeof self !== "undefined" ? self : this)'
+    },
+    resolve: {
+      extensions: ['.js', '.ts']
     },
     optimization: {
       minimizer: [new UglifyJsPlugin({ include: /\.min\.js$/, sourceMap: true })]
@@ -30,6 +32,13 @@ module.exports = function(env, argv) {
           test: /\.js$/,
           exclude: /node_modules/,
           use: { loader: "babel-loader", options: { root: "../../" } }
+        },
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'ts-loader'
+          }
         }
       ]
     },

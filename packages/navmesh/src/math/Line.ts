@@ -1,4 +1,4 @@
-import Vector2 from "./vector-2";
+import Vector2 from "./Vector2";
 
 /**
  * Stripped down version of Phaser's Line with just the functionality needed for navmeshes
@@ -7,7 +7,15 @@ import Vector2 from "./vector-2";
  * @class Line
  */
 export default class Line {
-  constructor(x1, y1, x2, y2) {
+  public start: Vector2;
+  public end: Vector2;
+
+  private left: number;
+  private right: number;
+  private top: number;
+  private bottom: number;
+
+  public constructor(x1: number, y1: number, x2: number, y2: number) {
     this.start = new Vector2(x1, y1);
     this.end = new Vector2(x2, y2);
 
@@ -17,7 +25,7 @@ export default class Line {
     this.bottom = Math.max(y1, y2);
   }
 
-  pointOnSegment(x, y) {
+  public pointOnSegment(x: number, y: number): boolean {
     return (
       x >= this.left &&
       x <= this.right &&
@@ -27,7 +35,7 @@ export default class Line {
     );
   }
 
-  pointOnLine(x, y) {
+  public pointOnLine(x: number, y: number): boolean {
     // Compare slope of line start -> xy to line start -> line end
     return (x - this.left) * (this.bottom - this.top) === (this.right - this.left) * (y - this.top);
   }

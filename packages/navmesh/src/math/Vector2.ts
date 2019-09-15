@@ -5,36 +5,34 @@
  * @class Vector2
  */
 export default class Vector2 {
-  constructor(x, y) {
-    this.x = x || 0;
-    this.y = y || 0;
+  public constructor(public x: number = 0, public y: number = 0) {
   }
 
-  equals(v) {
+  public equals(v: Vector2): boolean {
     return this.x === v.x && this.y === v.y;
   }
 
-  angle(v) {
+  public angle(v: Vector2): number {
     return Math.atan2(v.y - this.y, v.x - this.x);
   }
 
-  distance(v) {
+  public distance(v: Vector2): number {
     const dx = v.x - this.x;
     const dy = v.y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  add(v) {
+  public add(v: Vector2): void {
     this.x += v.x;
     this.y += v.y;
   }
 
-  subtract(v) {
+  public subtract(v: Vector2): void {
     this.x -= v.x;
     this.y -= v.y;
   }
 
-  clone() {
+  public clone(): Vector2 {
     return new Vector2(this.x, this.y);
   }
 }

@@ -1,17 +1,26 @@
 // Mostly sourced from PatrolJS at the moment. TODO: come back and reimplement this as an incomplete
 // funnel algorithm so astar checks can be more accurate.
 
-import { triarea2 } from "./utils";
+import { triarea2 } from "./Utils";
+import Vector2 from "./math/Vector2";
+
+type portal = {
+  left: Vector2;
+  right: Vector2;
+}
 
 /**
  * @private
  */
-class Channel {
-  constructor() {
+export default class Channel {
+  private portals: portal[];
+  public path: Vector2[];
+
+  public constructor() {
     this.portals = [];
   }
 
-  push(p1, p2 = null) {
+  public push(p1: Vector2, p2: Vector2 = null): void {
     if (p2 === null) p2 = p1;
     this.portals.push({
       left: p1,
@@ -19,12 +28,12 @@ class Channel {
     });
   }
 
-  stringPull() {
-    var portals = this.portals;
-    var pts = [];
+  public stringPull(): Vector2[] {
+    const portals: portal[] = this.portals;
+    const pts: Vector2[] = [];
     // Init scan state
-    var portalApex, portalLeft, portalRight;
-    var apexIndex = 0,
+    let portalApex: Vector2, portalLeft: Vector2, portalRight: Vector2;
+    let apexIndex = 0,
       leftIndex = 0,
       rightIndex = 0;
 
@@ -35,10 +44,10 @@ class Channel {
     // Add start point.
     pts.push(portalApex);
 
-    for (var i = 1; i < portals.length; i++) {
+    for (let i = 1; i < portals.length; i++) {
       // Find the next portal vertices
-      var left = portals[i].left;
-      var right = portals[i].right;
+      const left: Vector2 = portals[i].left;
+      const right: Vector2 = portals[i].right;
 
       // Update right vertex.
       if (triarea2(portalApex, portalRight, right) <= 0.0) {
@@ -105,4 +114,3 @@ class Channel {
   }
 }
 
-export default Channel;

@@ -1,4 +1,6 @@
-import Vector2 from "./math/vector-2";
+import Vector2 from "./math/Vector2";
+import Polygon from "./math/Polygon";
+import Line from "./math/Line";
 
 /**
  * A class that represents a navigable polygon with a navmesh. It is built on top of a
@@ -9,6 +11,13 @@ import Vector2 from "./math/vector-2";
  * @class NavPoly
  */
 export default class NavPoly {
+  public edges: Line[];
+  public neighbors: NavPoly[];
+  public portals: Line[];
+  public centroid: Vector2;
+  public boundingRadius: number;
+  private weight: number;
+
   /**
    * Creates an instance of NavPoly.
    * @param {number} id
@@ -16,9 +25,7 @@ export default class NavPoly {
    *
    * @memberof NavPoly
    */
-  constructor(id, polygon) {
-    this.id = id;
-    this.polygon = polygon;
+  public constructor(public id: number, public polygon: Polygon) {
     this.edges = polygon.edges;
     this.neighbors = [];
     this.portals = [];
@@ -34,7 +41,7 @@ export default class NavPoly {
    * @returns {Vector2[]}
    * @memberof NavPoly
    */
-  getPoints() {
+  public getPoints(): Vector2[] {
     return this.polygon.points;
   }
 
@@ -45,7 +52,7 @@ export default class NavPoly {
    * @returns {boolean}
    * @memberof NavPoly
    */
-  contains(point) {
+  public contains(point: Vector2): boolean {
     // Phaser's polygon check doesn't handle when a point is on one of the edges of the line. Note:
     // check numerical stability here. It would also be good to optimize this for different shapes.
     return this.polygon.contains(point.x, point.y) || this.isPointOnEdge(point);
@@ -59,7 +66,7 @@ export default class NavPoly {
    * @returns {Vector2}
    * @memberof NavPoly
    */
-  calculateCentroid() {
+  public calculateCentroid(): Vector2 {
     const centroid = new Vector2(0, 0);
     const length = this.polygon.points.length;
     this.polygon.points.forEach(p => centroid.add(p));
@@ -74,7 +81,7 @@ export default class NavPoly {
    * @returns {number}
    * @memberof NavPoly
    */
-  calculateRadius() {
+  public calculateRadius(): number {
     let boundingRadius = 0;
     for (const point of this.polygon.points) {
       const d = this.centroid.distance(point);
@@ -90,29 +97,29 @@ export default class NavPoly {
    * @returns {boolean}
    * @memberof NavPoly
    */
-  isPointOnEdge({ x, y }) {
+  public isPointOnEdge({ x, y }: { x: number, y: number }): boolean {
     for (const edge of this.edges) {
       if (edge.pointOnSegment(x, y)) return true;
     }
     return false;
   }
 
-  destroy() {
+  public destroy(): void {
     this.neighbors = [];
     this.portals = [];
   }
 
   // jsastar methods
-  toString() {
+  public toString(): string {
     return `NavPoly(id: ${this.id} at: ${this.centroid})`;
   }
-  isWall() {
+  public isWall(): boolean {
     return this.weight === 0;
   }
-  centroidDistance(navPolygon) {
+  public centroidDistance(navPolygon: NavPoly): number {
     return this.centroid.distance(navPolygon.centroid);
   }
-  getCost(navPolygon) {
+  public getCost(navPolygon: NavPoly): number {
     return this.centroidDistance(navPolygon);
   }
 }

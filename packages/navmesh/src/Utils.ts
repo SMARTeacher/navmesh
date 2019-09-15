@@ -1,9 +1,12 @@
+import Vector2 from "./math/Vector2";
+import Line from "./math/Line";
+
 /**
  * Twice the area of the triangle formed by a, b and c
  * @returns {number}
  * @private
  */
-export function triarea2(a, b, c) {
+export function triarea2(a: Vector2, b: Vector2, c: Vector2): number {
   const ax = b.x - a.x;
   const ay = b.y - a.y;
   const bx = c.x - a.x;
@@ -16,7 +19,7 @@ export function triarea2(a, b, c) {
  * @returns {number}
  * @private
  */
-export function clamp(value, min, max) {
+export function clamp(value: number, min: number, max: number): number {
   if (value < min) value = min;
   if (value > max) value = max;
   return value;
@@ -27,7 +30,7 @@ export function clamp(value, min, max) {
  * @returns {boolean}
  * @private
  */
-export function almostEqual(value1, value2, errorMargin = 0.0001) {
+export function almostEqual(value1: number, value2: number, errorMargin: number = 0.0001): boolean {
   if (Math.abs(value1 - value2) <= errorMargin) return true;
   else return false;
 }
@@ -38,7 +41,7 @@ export function almostEqual(value1, value2, errorMargin = 0.0001) {
  * @returns {number}
  * @private
  */
-export function angleDifference(x, y) {
+export function angleDifference(x: number, y: number): number {
   let a = x - y;
   const i = a + Math.PI;
   const j = Math.PI * 2;
@@ -52,12 +55,10 @@ export function angleDifference(x, y) {
  * @returns {boolean}
  * @private
  */
-export function areCollinear(line1, line2, errorMargin = 0.0001) {
+export function areCollinear(line1: Line, line2: Line, errorMargin: number = 0.0001): boolean {
   // Figure out if the two lines are equal by looking at the area of the triangle formed
   // by their points
   const area1 = triarea2(line1.start, line1.end, line2.start);
   const area2 = triarea2(line1.start, line1.end, line2.end);
-  if (almostEqual(area1, 0, errorMargin) && almostEqual(area2, 0, errorMargin)) {
-    return true;
-  } else return false;
+  return almostEqual(area1, 0, errorMargin) && almostEqual(area2, 0, errorMargin);
 }
