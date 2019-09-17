@@ -13,14 +13,15 @@
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "dts",
+    "outDir": "dist",
     "typeRoots": [
       "node_modules/@types"
     ]
   },
+  "include": [ "src/**/*.ts" ],
   "exclude": [
     "node_modules"
-  ],
-  "include": [
-    "**/*.ts"
   ]
 }

@@ -1,11 +1,11 @@
-import { astar } from "javascript-astar";
-import NavPoly from "./NavPoly";
-import NavGraph from "./NavGraph";
-import Channel from "./Channel";
-import { angleDifference, areCollinear, clamp } from "./Utils";
-import Vector2 from "./math/Vector2";
-import Line from "./math/Line";
-import Polygon from "./math/Polygon";
+import astar from 'javascript-astar';
+import { Channel } from './Channel';
+import { Line } from './math/Line';
+import { Polygon } from './math/Polygon';
+import { Vector2 } from './math/Vector2';
+import { NavGraph } from './NavGraph';
+import { NavPoly } from './NavPoly';
+import { Utils } from './Utils';
 
 /**
  * The workhorse that represents a navigation mesh built from a series of polygons. Once built, the
@@ -15,31 +15,28 @@ import Polygon from "./math/Polygon";
  * - channel: the path of polygons from starting point to end point
  * - pull the string: run the funnel algorithm on the channel so that the path hugs the edges of the
  *   channel. Equivalent to having a string snaking through a hallway and then pulling it taut.
- *
- * @class NavMesh
  */
-export default class NavMesh {
+export class NavMesh {
   private _meshShrinkAmount: number;
   private _navPolygons: NavPoly[];
   private _graph: NavGraph;
 
   /**
    * Creates an instance of NavMesh.
-   * @param {object[][]} meshPolygonPoints Array where each element is an array of point-like
+   * @param meshPolygonPoints Array where each element is an array of point-like
    * objects that defines a polygon.
-   * @param {number} [meshShrinkAmount=0] The amount (in pixels) that the navmesh has been
+   * @param [meshShrinkAmount=0] The amount (in pixels) that the navmesh has been
    * shrunk around obstacles (a.k.a the amount obstacles have been expanded)
-   * @memberof NavMesh
    */
   public constructor(meshPolygonPoints: Vector2[][], meshShrinkAmount: number = 0) {
     this._meshShrinkAmount = meshShrinkAmount;
 
-    const newPolys: Polygon[] = meshPolygonPoints.map(polyPoints => {
-      const vectors: Vector2[] = polyPoints.map(p => new Vector2(p.x, p.y));
+    const newPolys: Polygon[] = meshPolygonPoints.map((polyPoints: Vector2[]) => {
+      const vectors: Vector2[] = polyPoints.map((p: Vector2) => new Vector2(p.x, p.y));
       return new Polygon(vectors);
     });
 
-    this._navPolygons = newPolys.map((polygon, i) => new NavPoly(i, polygon));
+    this._navPolygons = newPolys.map((polygon: Polygon, i: number) => new NavPoly(i, polygon));
 
     this._calculateAllNeighbors();
 
@@ -49,9 +46,6 @@ export default class NavMesh {
 
   /**
    * Get the NavPolys that are in this navmesh.
-   *
-   * @returns {NavPoly[]}
-   * @memberof NavMesh
    */
   public getPolygons(): NavPoly[] {
     return this._navPolygons;
@@ -59,17 +53,17 @@ export default class NavMesh {
 
   /**
    * Add a polygon to the mesh
-   * @param {object[]} polyPoints  Array where each element is a point-like object that defines a polygon.
+   * @param polyPoints  Array where each element is a point-like object that defines a polygon.
    */
   public addPolygon(polyPoints: Vector2[]): void {
-    const newPoly: NavPoly = new NavPoly(this._navPolygons.length, new Polygon(polyPoints.map(p => new Vector2(p.x, p.y))));
+    const newPoly: NavPoly = new NavPoly(this._navPolygons.length, new Polygon(polyPoints.map((p: Vector2) => new Vector2(p.x, p.y))));
     this._navPolygons.push(newPoly);
     this._calculatePolyNeighbors(newPoly);
   }
 
   /**
    * Remove a previously added polygon from the mesh
-   * @param {number} index The index of the polygon to remove
+   * @param index The index of the polygon to remove
    */
   public removePolygon(index: number): void {
     this._navPolygons.splice(index, 1);
@@ -77,30 +71,27 @@ export default class NavMesh {
 
   /**
    * Cleanup method to remove references.
-   *
-   * @memberof NavMesh
    */
   public destroy(): void {
     this._graph.destroy();
-    for (const poly of this._navPolygons) poly.destroy();
+    for (const poly of this._navPolygons) { poly.destroy(); }
     this._navPolygons = [];
   }
 
   /**
    * Find a path from the start point to the end point using this nav mesh.
    *
-   * @param {object} startPoint A point-like object in the form {x, y}
-   * @param {object} endPoint A point-like object in the form {x, y}
-   * @returns {Vector2[]|null} An array of points if a path is found, or null if no path
-   *
-   * @memberof NavMesh
+   * @param startPoint A point-like object in the form {x, y}
+   * @param endPoint A point-like object in the form {x, y}
+   * @returns An array of points if a path is found, or null if no path
    */
   public findPath(startPoint: Vector2, endPoint: Vector2): Vector2[] {
     let startPoly: NavPoly = null;
     let endPoly: NavPoly = null;
     let startDistance: number = Number.MAX_VALUE;
     let endDistance: number = Number.MAX_VALUE;
-    let d: number, r: number;
+    let d: number;
+    let r: number;
     const startVector: Vector2 = new Vector2(startPoint.x, startPoint.y);
     const endVector: Vector2 = new Vector2(endPoint.x, endPoint.y);
 
@@ -131,7 +122,7 @@ export default class NavMesh {
         if (d <= r) {
           // Check if projected point is within range of a polgyon and is closer than the
           // previous point
-          const { distance } = this._projectPointToPolygon(startVector, navPoly);
+          const { distance }: { distance: number} = this._projectPointToPolygon(startVector, navPoly);
           if (distance <= this._meshShrinkAmount && distance < startDistance) {
             startPoly = navPoly;
             startDistance = distance;
@@ -146,7 +137,7 @@ export default class NavMesh {
         r = navPoly.boundingRadius + this._meshShrinkAmount;
         d = navPoly.centroid.distance(endVector);
         if (d <= r) {
-          const { distance } = this._projectPointToPolygon(endVector, navPoly);
+          const { distance }: { distance: number } = this._projectPointToPolygon(endVector, navPoly);
           if (distance <= this._meshShrinkAmount && distance < endDistance) {
             endPoly = navPoly;
             endDistance = distance;
@@ -156,10 +147,10 @@ export default class NavMesh {
     }
 
     // No matching polygons locations for the start or end, so no path found
-    if (!startPoly || !endPoly) return null;
+    if (!startPoly || !endPoly) { return null; }
 
     // If the start and end polygons are the same, return a direct path
-    if (startPoly === endPoly) return [startVector, endVector];
+    if (startPoly === endPoly) { return [startVector, endVector]; }
 
     // Search!
     // `as any`s are required because of a name collision
@@ -168,21 +159,21 @@ export default class NavMesh {
     });
 
     // While the start and end polygons may be valid, no path between them
-    if (astarPath.length === 0) return null;
+    if (astarPath.length === 0) { return null; }
 
     // jsastar drops the first point from the path, but the funnel algorithm needs it
     astarPath.unshift(startPoly);
 
     // We have a path, so now time for the funnel algorithm
-    const channel = new Channel();
+    const channel: Channel = new Channel();
     channel.push(startVector);
     for (let i: number = 0; i < astarPath.length - 1; i++) {
-      const navPolygon = astarPath[i];
-      const nextNavPolygon = astarPath[i + 1];
+      const navPolygon: NavPoly = astarPath[i];
+      const nextNavPolygon: NavPoly = astarPath[i + 1];
 
       // Find the portal
       let portal: Line = null;
-      for (let i = 0; i < navPolygon.neighbors.length; i++) {
+      for (let i: number = 0; i < navPolygon.neighbors.length; i++) {
         if (navPolygon.neighbors[i].id === nextNavPolygon.id) {
           portal = navPolygon.portals[i];
         }
@@ -201,7 +192,7 @@ export default class NavMesh {
     const phaserPath: Vector2[] = [];
     for (const p of channel.path) {
       const newPoint: Vector2 = p.clone();
-      if (!lastPoint || !newPoint.equals(lastPoint)) phaserPath.push(newPoint);
+      if (!lastPoint || !newPoint.equals(lastPoint)) { phaserPath.push(newPoint); }
       lastPoint = newPoint;
     }
 
@@ -234,17 +225,17 @@ export default class NavMesh {
   private _calculatePairNeighbors(navPoly: NavPoly, otherNavPoly: NavPoly): void {
     // Check if the other navpoly is within range to touch
     const d: number = navPoly.centroid.distance(otherNavPoly.centroid);
-    if (d > navPoly.boundingRadius + otherNavPoly.boundingRadius) return;
+    if (d > navPoly.boundingRadius + otherNavPoly.boundingRadius) { return; }
 
     // The are in range, so check each edge pairing
     for (const edge of navPoly.edges) {
       for (const otherEdge of otherNavPoly.edges) {
         // If edges aren't collinear, not an option for connecting navpolys
-        if (!areCollinear(edge, otherEdge)) continue;
+        if (!Utils.areCollinear(edge, otherEdge)) { continue; }
 
         // If they are collinear, check if they overlap
         const overlap: [Vector2, Vector2] = this._getSegmentOverlap(edge, otherEdge);
-        if (!overlap) continue;
+        if (!overlap) { continue; }
 
         // Connections are symmetric!
         navPoly.neighbors.push(otherNavPoly);
@@ -252,12 +243,12 @@ export default class NavMesh {
 
         // Calculate the portal between the two polygons - this needs to be in
         // counter-clockwise order, relative to each polygon
-        const [p1, p2] = overlap;
+        const [p1, p2]: [Vector2, Vector2] = overlap;
         let edgeStartAngle: number = navPoly.centroid.angle(edge.start);
         let a1: number = navPoly.centroid.angle(overlap[0]);
         let a2: number = navPoly.centroid.angle(overlap[1]);
-        let d1: number = angleDifference(edgeStartAngle, a1);
-        let d2: number = angleDifference(edgeStartAngle, a2);
+        let d1: number = Utils.angleDifference(edgeStartAngle, a1);
+        let d2: number = Utils.angleDifference(edgeStartAngle, a2);
         if (d1 < d2) {
           navPoly.portals.push(new Line(p1.x, p1.y, p2.x, p2.y));
         } else {
@@ -267,8 +258,8 @@ export default class NavMesh {
         edgeStartAngle = otherNavPoly.centroid.angle(otherEdge.start);
         a1 = otherNavPoly.centroid.angle(overlap[0]);
         a2 = otherNavPoly.centroid.angle(overlap[1]);
-        d1 = angleDifference(edgeStartAngle, a1);
-        d2 = angleDifference(edgeStartAngle, a2);
+        d1 = Utils.angleDifference(edgeStartAngle, a1);
+        d2 = Utils.angleDifference(edgeStartAngle, a2);
         if (d1 < d2) {
           otherNavPoly.portals.push(new Line(p1.x, p1.y, p2.x, p2.y));
         } else {
@@ -284,19 +275,16 @@ export default class NavMesh {
   // Check two collinear line segments to see if they overlap by sorting the points.
   // Algorithm source: http://stackoverflow.com/a/17152247
   private _getSegmentOverlap(line1: Line, line2: Line): [Vector2, Vector2] {
-    const points: { line: Line, point: Vector2 }[] = [
+    type lineAndPoint = { line: Line; point: Vector2 };
+    const points: lineAndPoint[] = [
       { line: line1, point: line1.start },
       { line: line1, point: line1.end },
       { line: line2, point: line2.start },
       { line: line2, point: line2.end }
     ];
-    points.sort(function(a, b) {
-      if (a.point.x < b.point.x) return -1;
-      else if (a.point.x > b.point.x) return 1;
-      else {
-        if (a.point.y < b.point.y) return -1;
-        else if (a.point.y > b.point.y) return 1;
-        else return 0;
+    points.sort((a: lineAndPoint, b: lineAndPoint) => {
+      if (a.point.x < b.point.x) { return -1; } else if (a.point.x > b.point.x) { return 1; } else {
+        if (a.point.y < b.point.y) { return -1; } else if (a.point.y > b.point.y) { return 1; } else { return 0; }
       }
     });
     // If the first two points in the array come from the same line, no overlap
@@ -304,21 +292,16 @@ export default class NavMesh {
     // If the two middle points in the array are the same coordinates, then there is a
     // single point of overlap.
     const singlePointOverlap: boolean = points[1].point.equals(points[2].point);
-    if (noOverlap || singlePointOverlap) return null;
-    else return [points[1].point, points[2].point];
+    if (noOverlap || singlePointOverlap) { return null; } else { return [points[1].point, points[2].point]; }
   }
 
   /**
    * Project a point onto a polygon in the shortest distance possible.
    *
-   * @param {Vector2} point The point to project
-   * @param {NavPoly} navPoly The navigation polygon to test against
-   * @returns {{point: Vector2, distance: number}}
-   *
-   * @private
-   * @memberof NavMesh
+   * @param point The point to project
+   * @param navPoly The navigation polygon to test against
    */
-  private _projectPointToPolygon(point: Vector2, navPoly: NavPoly): { point: Vector2, distance: number} {
+  private _projectPointToPolygon(point: Vector2, navPoly: NavPoly): { point: Vector2; distance: number} {
     let closestProjection: Vector2 = null;
     let closestDistance: number = Number.MAX_VALUE;
     for (const edge of navPoly.edges) {
@@ -333,8 +316,8 @@ export default class NavMesh {
   }
 
   private _distanceSquared(a: Vector2, b: Vector2): number {
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
+    const dx: number = b.x - a.x;
+    const dy: number = b.y - a.y;
     return dx * dx + dy * dy;
   }
 
@@ -349,7 +332,7 @@ export default class NavMesh {
     const l2: number = this._distanceSquared(a, b);
     let t: number = ((point.x - a.x) * (b.x - a.x) + (point.y - a.y) * (b.y - a.y)) / l2;
     // We clamp t from [0,1] to handle points outside the segment vw.
-    t = clamp(t, 0, 1);
+    t = Utils.clamp(t, 0, 1);
     // Project onto the segment
     const p: Vector2 = new Vector2(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y));
     return p;

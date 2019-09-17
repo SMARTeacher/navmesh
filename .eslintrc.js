@@ -17,9 +17,6 @@ module.exports = {
   parserOptions: {
     sourceType: "module"
   },
-  globals: {
-    Phaser: true
-  },
   overrides: [
     {
       files: ["**/*test.js"],

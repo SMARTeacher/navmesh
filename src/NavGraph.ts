@@ -1,23 +1,12 @@
-import jsastar from "javascript-astar";
-import NavPoly from "./NavPoly";
+import * as jsastar from 'javascript-astar';
+import { NavPoly } from './NavPoly';
 
-interface NavGraph {
-  init(): void;
-  cleanDirty(): void;
-  markDirty(): void;
-
-  neighbors(navPolygon: NavPoly): NavPoly[];
-  navHeuristic(navPolygon1: NavPoly, navPolygon2: NavPoly): number;
-  destroy(): void;
-}
 /**
  * Graph for javascript-astar. It implements the functionality for astar. See GPS test from astar
  * repo for structure: https://github.com/bgrins/javascript-astar/blob/master/test/tests.js
  *
- * @class NavGraph
- * @private
  */
-class NavGraph {
+export class NavGraph {
   private nodes: NavPoly[];
   
   public constructor(navPolygons: NavPoly[]) {
@@ -37,10 +26,15 @@ class NavGraph {
     this.cleanDirty();
     this.nodes = [];
   }
+
+  // tslint:disable-next-line:no-empty
+  public init(): void { }
+  // tslint:disable-next-line:no-empty
+  public cleanDirty(): void { }
+  // tslint:disable-next-line:no-empty
+  public markDirty(): void { }
 }
 
 NavGraph.prototype.init = jsastar.Graph.prototype.init;
 NavGraph.prototype.cleanDirty = jsastar.Graph.prototype.cleanDirty;
 NavGraph.prototype.markDirty = jsastar.Graph.prototype.markDirty;
-
-export default NavGraph;

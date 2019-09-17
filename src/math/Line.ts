@@ -1,12 +1,9 @@
-import Vector2 from "./Vector2";
+import { Vector2 } from './Vector2';
 
 /**
  * Stripped down version of Phaser's Line with just the functionality needed for navmeshes
- *
- * @export
- * @class Line
  */
-export default class Line {
+export class Line {
   public start: Vector2;
   public end: Vector2;
 

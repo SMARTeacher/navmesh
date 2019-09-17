@@ -2,42 +2,37 @@
   "name": "@prodigy/navmesh",
   "version": "1.0.0",
   "description": "A library for fast pathfinding using navigation meshes in JS",
-  "main": "dist/navmesh.min.js",
+  "main": "./dist/index.js",
+  "types": "./dts/index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "webpack --mode production",
-    "build:dev": "webpack --mode development --display-error-details",
-    "watch": "webpack --mode development --watch",
-    "prepublishOnly": "npm run build"
+    "build": "node node_modules/typescript/bin/tsc"
   },
   "dependencies": {
-    "javascript-astar": "github:mikewesthad/javascript-astar"
+    "javascript-astar": "^0.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "babel-jest": "^23.2.0",
-    "babel-loader": "^8.0.6",
-    "jest": "^23.2.0",
-    "ts-loader": "6.0.4",
-    "tslint": "5.18.0",
-    "typescript": "3.4.3",
-    "uglifyjs-webpack-plugin": "^1.2.7",
-    "webpack": "^4.14.0",
-    "webpack-cli": "^3.0.8"
+    "ts-loader": "^6.1.0",
+    "typescript": "^3.6.3"
+  },
+  "files": [ "dist", "dts" ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SMARTeacher/navmesh.git"
   },
   "keywords": [
     "path finding",
     "navigation mesh",
     "a*"
   ],
-  "author": "Michael Hadley",
+  "author": "Christopher Light",
   "contributors": [
+    "Michael Hadley",
     "Rex Twedt"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mikewesthad/phaser-navmesh-plugin/issues"
+    "url": "https://github.com/SMARTeacher/navmesh/issues"
   },
-  "homepage": "https://github.com/mikewesthad/phaser-navmesh-plugin#readme"
+  "homepage": "https://github.com/SMARTeacher/navmesh#readme"
 }

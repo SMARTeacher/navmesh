@@ -1,11 +1,13 @@
 /**
  * Stripped down version of Phaser's Vector2 with just the functionality needed for navmeshes
- *
- * @export
- * @class Vector2
  */
-export default class Vector2 {
-  public constructor(public x: number = 0, public y: number = 0) {
+export class Vector2 {
+  public x: number;
+  public y: number;
+
+  public constructor(x: number = 0, y: number = 0) {
+    this.x = x;
+    this.y = y;
   }
 
   public equals(v: Vector2): boolean {
@@ -17,8 +19,8 @@ export default class Vector2 {
   }
 
   public distance(v: Vector2): number {
-    const dx = v.x - this.x;
-    const dy = v.y - this.y;
+    const dx: number = v.x - this.x;
+    const dy: number = v.y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
