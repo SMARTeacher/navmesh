@@ -1,4 +1,4 @@
-import astar from 'javascript-astar';
+import { astar } from 'javascript-astar';
 import { Channel } from './Channel';
 import { Line } from './math/Line';
 import { Polygon } from './math/Polygon';
@@ -153,8 +153,7 @@ export class NavMesh {
     if (startPoly === endPoly) { return [startVector, endVector]; }
 
     // Search!
-    // `as any`s are required because of a name collision
-    const astarPath: NavPoly[] = astar.search(this._graph as any, startPoly as any, endPoly as any, {
+    const astarPath: NavPoly[] = astar.search(this._graph, startPoly, endPoly, {
       heuristic: this._graph.navHeuristic
     });
 
