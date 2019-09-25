@@ -55,10 +55,13 @@ export class NavMesh {
    * Add a polygon to the mesh
    * @param polyPoints  Array where each element is a point-like object that defines a polygon.
    */
-  public addPolygon(polyPoints: Vector2[]): void {
-    const newPoly: NavPoly = new NavPoly(this._navPolygons.length, new Polygon(polyPoints.map((p: Vector2) => new Vector2(p.x, p.y))));
-    this._navPolygons.push(newPoly);
+  public addPolygon(polyPoints: Vector2[]): number {
+    const newPoly: NavPoly = new NavPoly(this._navPolygons.length, new Polygon(polyPoints));
+    const index: number = this._navPolygons.push(newPoly) - 1;
+
     this._calculatePolyNeighbors(newPoly);
+
+    return index;
   }
 
   /**
