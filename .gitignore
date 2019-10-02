@@ -2,8 +2,6 @@ docs
 types
 node_modules
 *.log
-dist
-dts
 package-lock.json
 *.tgz
 

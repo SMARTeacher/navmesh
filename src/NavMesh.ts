@@ -20,6 +20,7 @@ export class NavMesh {
   private _meshShrinkAmount: number;
   private _navPolygons: NavPoly[];
   private _graph: NavGraph;
+  private _nextId: number;
 
   /**
    * Creates an instance of NavMesh.
@@ -37,6 +38,7 @@ export class NavMesh {
     });
 
     this._navPolygons = newPolys.map((polygon: Polygon, i: number) => new NavPoly(i, polygon));
+    this._nextId = this._navPolygons.length;
 
     this._calculateAllNeighbors();
 
@@ -56,20 +58,36 @@ export class NavMesh {
    * @param polyPoints  Array where each element is a point-like object that defines a polygon.
    */
   public addPolygon(polyPoints: Vector2[]): number {
-    const newPoly: NavPoly = new NavPoly(this._navPolygons.length, new Polygon(polyPoints));
-    const index: number = this._navPolygons.push(newPoly) - 1;
-
+    const newPoly: NavPoly = new NavPoly(this._nextId++, new Polygon(polyPoints));
+    this._navPolygons.push(newPoly);
+    
     this._calculatePolyNeighbors(newPoly);
 
-    return index;
+    return newPoly.id;
   }
 
   /**
    * Remove a previously added polygon from the mesh
-   * @param index The index of the polygon to remove
+   * @param id The id of the polygon to remove
    */
-  public removePolygon(index: number): void {
-    this._navPolygons.splice(index, 1);
+  public removePolygon(id: number): void {
+    for (let i: number = 0; i < this._navPolygons.length; ++i) {
+      const poly: NavPoly = this._navPolygons[i];
+      if (poly.id === id) {
+        // Remove from neighbours
+        for (let j: number = 0; j < poly.neighbors.length; ++j) {
+          const neighbor: NavPoly = poly.neighbors[j];
+          for (let k: number = 0; k < neighbor.neighbors.length; ++k) {
+            if (neighbor.neighbors[k].id === id) {
+              neighbor.neighbors.splice(k, 1);
+              neighbor.portals.splice(k, 1);
+            }
+          }
+        }
+        this._navPolygons.splice(i, 1);
+        return;
+      }
+    }
   }
 
   /**
