@@ -113,6 +113,7 @@ var NavMesh = (function () {
         if (startPoly === endPoly) {
             return [startVector, endVector];
         }
+        this._graph.init();
         var astarPath = javascript_astar_1.astar.search(this._graph, startPoly, endPoly, {
             heuristic: this._graph.navHeuristic
         });

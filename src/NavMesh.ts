@@ -174,6 +174,7 @@ export class NavMesh {
     if (startPoly === endPoly) { return [startVector, endVector]; }
 
     // Search!
+    this._graph.init();
     const astarPath: NavPoly[] = astar.search(this._graph, startPoly, endPoly, {
       heuristic: this._graph.navHeuristic
     });
