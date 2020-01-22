@@ -5,7 +5,6 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./NavMesh"));
 __export(require("./NavPoly"));
-__export(require("./math/Vector2"));
 __export(require("./math/Line"));
 __export(require("./math/Polygon"));
 //# sourceMappingURL=index.js.map

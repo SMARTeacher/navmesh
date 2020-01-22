@@ -23,5 +23,9 @@
   "include": [ "src/**/*.ts" ],
   "exclude": [
     "node_modules"
+  ],
+  "files": [
+    "./node_modules/phaser-ce/typescript/phaser.comments.d.ts",
+    "./node_modules/protobufjs/minimal.d.ts"
   ]
 }

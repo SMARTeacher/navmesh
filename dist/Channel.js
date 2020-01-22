@@ -29,7 +29,7 @@ var Channel = (function () {
             var left = portals[i].left;
             var right = portals[i].right;
             if (Utils_1.Utils.triarea2(portalApex, portalRight, right) <= 0) {
-                if (portalApex.equals(portalRight) || Utils_1.Utils.triarea2(portalApex, portalLeft, right) > 0) {
+                if (portalApex.isNearlyEqual(portalRight) || Utils_1.Utils.triarea2(portalApex, portalLeft, right) > 0) {
                     portalRight = right;
                     rightIndex = i;
                 }
@@ -46,7 +46,7 @@ var Channel = (function () {
                 }
             }
             if (Utils_1.Utils.triarea2(portalApex, portalLeft, left) >= 0) {
-                if (portalApex.equals(portalLeft) || Utils_1.Utils.triarea2(portalApex, portalRight, left) < 0) {
+                if (portalApex.isNearlyEqual(portalLeft) || Utils_1.Utils.triarea2(portalApex, portalRight, left) < 0) {
                     portalLeft = left;
                     leftIndex = i;
                 }
@@ -63,7 +63,7 @@ var Channel = (function () {
                 }
             }
         }
-        if (pts.length === 0 || !pts[pts.length - 1].equals(portals[portals.length - 1].left)) {
+        if (pts.length === 0 || !pts[pts.length - 1].isNearlyEqual(portals[portals.length - 1].left)) {
             pts.push(portals[portals.length - 1].left);
         }
         this.path = pts;

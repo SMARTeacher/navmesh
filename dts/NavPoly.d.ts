@@ -1,6 +1,6 @@
 import { Line } from './math/Line';
 import { Polygon } from './math/Polygon';
-import { Vector2 } from './math/Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 export declare class NavPoly {
     id: number;
     polygon: Polygon;

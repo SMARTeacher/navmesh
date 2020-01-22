@@ -8,8 +8,8 @@ var Polygon = (function () {
         this.edges = [];
         for (var i = 1; i < points.length; i++) {
             var p1 = points[i - 1];
-            var p2 = points[i];
-            this.edges.push(new Line_1.Line(p1.x, p1.y, p2.x, p2.y));
+            var p2_1 = points[i];
+            this.edges.push(new Line_1.Line(p1.x, p1.y, p2_1.x, p2_1.y));
         }
         if (closed) {
             var first = points[0];

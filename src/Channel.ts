@@ -1,7 +1,7 @@
 // Mostly sourced from PatrolJS at the moment. TODO: come back and reimplement this as an incomplete
 // funnel algorithm so astar checks can be more accurate.
 
-import { Vector2 } from './math/Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 import { Utils } from './Utils';
 
 type portal = {
@@ -52,7 +52,7 @@ export class Channel {
 
       // Update right vertex.
       if (Utils.triarea2(portalApex, portalRight, right) <= 0) {
-        if (portalApex.equals(portalRight) || Utils.triarea2(portalApex, portalLeft, right) > 0) {
+        if (portalApex.isNearlyEqual(portalRight) || Utils.triarea2(portalApex, portalLeft, right) > 0) {
           // Tighten the funnel.
           portalRight = right;
           rightIndex = i;
@@ -79,7 +79,7 @@ export class Channel {
 
       // Update left vertex.
       if (Utils.triarea2(portalApex, portalLeft, left) >= 0) {
-        if (portalApex.equals(portalLeft) || Utils.triarea2(portalApex, portalRight, left) < 0) {
+        if (portalApex.isNearlyEqual(portalLeft) || Utils.triarea2(portalApex, portalRight, left) < 0) {
           // Tighten the funnel.
           portalLeft = left;
           leftIndex = i;
@@ -105,7 +105,7 @@ export class Channel {
       }
     }
 
-    if (pts.length === 0 || !pts[pts.length - 1].equals(portals[portals.length - 1].left)) {
+    if (pts.length === 0 || !pts[pts.length - 1].isNearlyEqual(portals[portals.length - 1].left)) {
       // Append last point to path.
       pts.push(portals[portals.length - 1].left);
     }

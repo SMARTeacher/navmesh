@@ -1,5 +1,5 @@
 import { Line } from './Line';
-import { Vector2 } from './Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 export declare class Polygon {
     points: Vector2[];
     edges: Line[];

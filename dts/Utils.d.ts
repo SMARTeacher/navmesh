@@ -1,5 +1,5 @@
 import { Line } from './math/Line';
-import { Vector2 } from './math/Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 export declare class Utils {
     static triarea2(a: Vector2, b: Vector2, c: Vector2): number;
     static clamp(value: number, min: number, max: number): number;

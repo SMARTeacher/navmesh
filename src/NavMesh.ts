@@ -2,7 +2,7 @@ import { astar } from 'javascript-astar';
 import { Channel } from './Channel';
 import { Line } from './math/Line';
 import { Polygon } from './math/Polygon';
-import { Vector2 } from './math/Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 import { NavGraph } from './NavGraph';
 import { NavPoly } from './NavPoly';
 import { Utils } from './Utils';
@@ -120,13 +120,13 @@ export class NavMesh {
     for (const navPoly of this._navPolygons) {
       r = navPoly.boundingRadius;
       // Start
-      d = navPoly.centroid.distance(startVector);
+      d = Math.sqrt(navPoly.centroid.getDistanceSq(startVector));
       if (d <= startDistance && d <= r && navPoly.contains(startVector)) {
         startPoly = navPoly;
         startDistance = d;
       }
       // End
-      d = navPoly.centroid.distance(endVector);
+      d = Math.sqrt(navPoly.centroid.getDistanceSq(endVector));
       if (d <= endDistance && d <= r && navPoly.contains(endVector)) {
         endPoly = navPoly;
         endDistance = d;
@@ -139,7 +139,7 @@ export class NavMesh {
       for (const navPoly of this._navPolygons) {
         // Check if point is within bounding circle to avoid extra projection calculations
         r = navPoly.boundingRadius + this._meshShrinkAmount;
-        d = navPoly.centroid.distance(startVector);
+        d = Math.sqrt(navPoly.centroid.getDistanceSq(startVector));
         if (d <= r) {
           // Check if projected point is within range of a polgyon and is closer than the
           // previous point
@@ -156,7 +156,7 @@ export class NavMesh {
     if (!endPoly && this._meshShrinkAmount > 0) {
       for (const navPoly of this._navPolygons) {
         r = navPoly.boundingRadius + this._meshShrinkAmount;
-        d = navPoly.centroid.distance(endVector);
+        d = Math.sqrt(navPoly.centroid.getDistanceSq(endVector));
         if (d <= r) {
           const { distance }: { distance: number } = this._projectPointToPolygon(endVector, navPoly);
           if (distance <= this._meshShrinkAmount && distance < endDistance) {
@@ -212,8 +212,8 @@ export class NavMesh {
     let lastPoint: Vector2 = null;
     const phaserPath: Vector2[] = [];
     for (const p of channel.path) {
-      const newPoint: Vector2 = p.clone();
-      if (!lastPoint || !newPoint.equals(lastPoint)) { phaserPath.push(newPoint); }
+      const newPoint: Vector2 = new Vector2(p.x, p.y);
+      if (!lastPoint || !newPoint.isNearlyEqual(lastPoint)) { phaserPath.push(newPoint); }
       lastPoint = newPoint;
     }
 
@@ -245,7 +245,7 @@ export class NavMesh {
 
   private _calculatePairNeighbors(navPoly: NavPoly, otherNavPoly: NavPoly): void {
     // Check if the other navpoly is within range to touch
-    const d: number = navPoly.centroid.distance(otherNavPoly.centroid);
+    const d: number = Math.sqrt(navPoly.centroid.getDistanceSq(otherNavPoly.centroid));
     if (d > navPoly.boundingRadius + otherNavPoly.boundingRadius) { return; }
 
     // The are in range, so check each edge pairing
@@ -312,7 +312,7 @@ export class NavMesh {
     const noOverlap: boolean = points[0].line === points[1].line;
     // If the two middle points in the array are the same coordinates, then there is a
     // single point of overlap.
-    const singlePointOverlap: boolean = points[1].point.equals(points[2].point);
+    const singlePointOverlap: boolean = points[1].point.isNearlyEqual(points[2].point);
     if (noOverlap || singlePointOverlap) { return null; } else { return [points[1].point, points[2].point]; }
   }
 
@@ -327,7 +327,7 @@ export class NavMesh {
     let closestDistance: number = Number.MAX_VALUE;
     for (const edge of navPoly.edges) {
       const projectedPoint: Vector2 = this._projectPointToEdge(point, edge);
-      const d: number = point.distance(projectedPoint);
+      const d: number = Math.sqrt(point.getDistanceSq(projectedPoint));
       if (closestProjection === null || d < closestDistance) {
         closestDistance = d;
         closestProjection = projectedPoint;

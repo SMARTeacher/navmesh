@@ -4,7 +4,7 @@ var javascript_astar_1 = require("javascript-astar");
 var Channel_1 = require("./Channel");
 var Line_1 = require("./math/Line");
 var Polygon_1 = require("./math/Polygon");
-var Vector2_1 = require("./math/Vector2");
+var game_framework_1 = require("@prodigy/game-framework");
 var NavGraph_1 = require("./NavGraph");
 var NavPoly_1 = require("./NavPoly");
 var Utils_1 = require("./Utils");
@@ -13,7 +13,7 @@ var NavMesh = (function () {
         if (meshShrinkAmount === void 0) { meshShrinkAmount = 0; }
         this._meshShrinkAmount = meshShrinkAmount;
         var newPolys = meshPolygonPoints.map(function (polyPoints) {
-            var vectors = polyPoints.map(function (p) { return new Vector2_1.Vector2(p.x, p.y); });
+            var vectors = polyPoints.map(function (p) { return new game_framework_1.Vector2(p.x, p.y); });
             return new Polygon_1.Polygon(vectors);
         });
         this._navPolygons = newPolys.map(function (polygon, i) { return new NavPoly_1.NavPoly(i, polygon); });
@@ -63,17 +63,17 @@ var NavMesh = (function () {
         var endDistance = Number.MAX_VALUE;
         var d;
         var r;
-        var startVector = new Vector2_1.Vector2(startPoint.x, startPoint.y);
-        var endVector = new Vector2_1.Vector2(endPoint.x, endPoint.y);
+        var startVector = new game_framework_1.Vector2(startPoint.x, startPoint.y);
+        var endVector = new game_framework_1.Vector2(endPoint.x, endPoint.y);
         for (var _i = 0, _a = this._navPolygons; _i < _a.length; _i++) {
             var navPoly = _a[_i];
             r = navPoly.boundingRadius;
-            d = navPoly.centroid.distance(startVector);
+            d = Math.sqrt(navPoly.centroid.getDistanceSq(startVector));
             if (d <= startDistance && d <= r && navPoly.contains(startVector)) {
                 startPoly = navPoly;
                 startDistance = d;
             }
-            d = navPoly.centroid.distance(endVector);
+            d = Math.sqrt(navPoly.centroid.getDistanceSq(endVector));
             if (d <= endDistance && d <= r && navPoly.contains(endVector)) {
                 endPoly = navPoly;
                 endDistance = d;
@@ -83,7 +83,7 @@ var NavMesh = (function () {
             for (var _b = 0, _c = this._navPolygons; _b < _c.length; _b++) {
                 var navPoly = _c[_b];
                 r = navPoly.boundingRadius + this._meshShrinkAmount;
-                d = navPoly.centroid.distance(startVector);
+                d = Math.sqrt(navPoly.centroid.getDistanceSq(startVector));
                 if (d <= r) {
                     var distance = this._projectPointToPolygon(startVector, navPoly).distance;
                     if (distance <= this._meshShrinkAmount && distance < startDistance) {
@@ -97,7 +97,7 @@ var NavMesh = (function () {
             for (var _d = 0, _e = this._navPolygons; _d < _e.length; _d++) {
                 var navPoly = _e[_d];
                 r = navPoly.boundingRadius + this._meshShrinkAmount;
-                d = navPoly.centroid.distance(endVector);
+                d = Math.sqrt(navPoly.centroid.getDistanceSq(endVector));
                 if (d <= r) {
                     var distance = this._projectPointToPolygon(endVector, navPoly).distance;
                     if (distance <= this._meshShrinkAmount && distance < endDistance) {
@@ -140,8 +140,8 @@ var NavMesh = (function () {
         var phaserPath = [];
         for (var _f = 0, _g = channel.path; _f < _g.length; _f++) {
             var p = _g[_f];
-            var newPoint = p.clone();
-            if (!lastPoint || !newPoint.equals(lastPoint)) {
+            var newPoint = new game_framework_1.Vector2(p.x, p.y);
+            if (!lastPoint || !newPoint.isNearlyEqual(lastPoint)) {
                 phaserPath.push(newPoint);
             }
             lastPoint = newPoint;
@@ -166,7 +166,7 @@ var NavMesh = (function () {
         }
     };
     NavMesh.prototype._calculatePairNeighbors = function (navPoly, otherNavPoly) {
-        var d = navPoly.centroid.distance(otherNavPoly.centroid);
+        var d = Math.sqrt(navPoly.centroid.getDistanceSq(otherNavPoly.centroid));
         if (d > navPoly.boundingRadius + otherNavPoly.boundingRadius) {
             return;
         }
@@ -183,17 +183,17 @@ var NavMesh = (function () {
                 }
                 navPoly.neighbors.push(otherNavPoly);
                 otherNavPoly.neighbors.push(navPoly);
-                var p1 = overlap[0], p2 = overlap[1];
+                var p1 = overlap[0], p2_1 = overlap[1];
                 var edgeStartAngle = navPoly.centroid.angle(edge.start);
                 var a1 = navPoly.centroid.angle(overlap[0]);
                 var a2 = navPoly.centroid.angle(overlap[1]);
                 var d1 = Utils_1.Utils.angleDifference(edgeStartAngle, a1);
                 var d2 = Utils_1.Utils.angleDifference(edgeStartAngle, a2);
                 if (d1 < d2) {
-                    navPoly.portals.push(new Line_1.Line(p1.x, p1.y, p2.x, p2.y));
+                    navPoly.portals.push(new Line_1.Line(p1.x, p1.y, p2_1.x, p2_1.y));
                 }
                 else {
-                    navPoly.portals.push(new Line_1.Line(p2.x, p2.y, p1.x, p1.y));
+                    navPoly.portals.push(new Line_1.Line(p2_1.x, p2_1.y, p1.x, p1.y));
                 }
                 edgeStartAngle = otherNavPoly.centroid.angle(otherEdge.start);
                 a1 = otherNavPoly.centroid.angle(overlap[0]);
@@ -201,10 +201,10 @@ var NavMesh = (function () {
                 d1 = Utils_1.Utils.angleDifference(edgeStartAngle, a1);
                 d2 = Utils_1.Utils.angleDifference(edgeStartAngle, a2);
                 if (d1 < d2) {
-                    otherNavPoly.portals.push(new Line_1.Line(p1.x, p1.y, p2.x, p2.y));
+                    otherNavPoly.portals.push(new Line_1.Line(p1.x, p1.y, p2_1.x, p2_1.y));
                 }
                 else {
-                    otherNavPoly.portals.push(new Line_1.Line(p2.x, p2.y, p1.x, p1.y));
+                    otherNavPoly.portals.push(new Line_1.Line(p2_1.x, p2_1.y, p1.x, p1.y));
                 }
             }
         }
@@ -236,7 +236,7 @@ var NavMesh = (function () {
             }
         });
         var noOverlap = points[0].line === points[1].line;
-        var singlePointOverlap = points[1].point.equals(points[2].point);
+        var singlePointOverlap = points[1].point.isNearlyEqual(points[2].point);
         if (noOverlap || singlePointOverlap) {
             return null;
         }
@@ -250,7 +250,7 @@ var NavMesh = (function () {
         for (var _i = 0, _a = navPoly.edges; _i < _a.length; _i++) {
             var edge = _a[_i];
             var projectedPoint = this._projectPointToEdge(point, edge);
-            var d = point.distance(projectedPoint);
+            var d = Math.sqrt(point.getDistanceSq(projectedPoint));
             if (closestProjection === null || d < closestDistance) {
                 closestDistance = d;
                 closestProjection = projectedPoint;
@@ -269,7 +269,7 @@ var NavMesh = (function () {
         var l2 = this._distanceSquared(a, b);
         var t = ((point.x - a.x) * (b.x - a.x) + (point.y - a.y) * (b.y - a.y)) / l2;
         t = Utils_1.Utils.clamp(t, 0, 1);
-        var p = new Vector2_1.Vector2(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y));
+        var p = new game_framework_1.Vector2(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y));
         return p;
     };
     return NavMesh;

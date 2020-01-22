@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Vector2_1 = require("./math/Vector2");
+var game_framework_1 = require("@prodigy/game-framework");
 var NavPoly = (function () {
     function NavPoly(id, polygon) {
         this.id = id;
@@ -19,7 +19,7 @@ var NavPoly = (function () {
         return this.polygon.contains(point.x, point.y) || this.isPointOnEdge(point);
     };
     NavPoly.prototype.calculateCentroid = function () {
-        var centroid = new Vector2_1.Vector2(0, 0);
+        var centroid = new game_framework_1.Vector2(0, 0);
         var length = this.polygon.points.length;
         this.polygon.points.forEach(function (p) { return centroid.add(p); });
         centroid.x /= length;
@@ -30,7 +30,7 @@ var NavPoly = (function () {
         var boundingRadius = 0;
         for (var _i = 0, _a = this.polygon.points; _i < _a.length; _i++) {
             var point = _a[_i];
-            var d = this.centroid.distance(point);
+            var d = Math.sqrt(this.centroid.getDistanceSq(point));
             if (d > boundingRadius) {
                 boundingRadius = d;
             }
@@ -58,7 +58,7 @@ var NavPoly = (function () {
         return this.weight === 0;
     };
     NavPoly.prototype.centroidDistance = function (navPolygon) {
-        return this.centroid.distance(navPolygon.centroid);
+        return Math.sqrt(this.centroid.getDistanceSq(navPolygon.centroid));
     };
     NavPoly.prototype.getCost = function (navPolygon) {
         return this.centroidDistance(navPolygon);

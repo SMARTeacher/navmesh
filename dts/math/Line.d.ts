@@ -1,4 +1,4 @@
-import { Vector2 } from './Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 export declare class Line {
     start: Vector2;
     end: Vector2;

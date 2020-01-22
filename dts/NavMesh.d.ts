@@ -1,4 +1,4 @@
-import { Vector2 } from './math/Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 import { NavPoly } from './NavPoly';
 export declare class NavMesh {
     private _meshShrinkAmount;
