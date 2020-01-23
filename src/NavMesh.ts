@@ -2,7 +2,7 @@ import { astar } from 'javascript-astar';
 import { Channel } from './Channel';
 import { Line } from './math/Line';
 import { Polygon } from './math/Polygon';
-import { Vector2 } from '@prodigy/game-framework';
+import { Vector2, ReadonlyVector2 } from '@prodigy/game-framework';
 import { NavGraph } from './NavGraph';
 import { NavPoly } from './NavPoly';
 import { Utils } from './Utils';
@@ -106,7 +106,7 @@ export class NavMesh {
    * @param endPoint A point-like object in the form {x, y}
    * @returns An array of points if a path is found, or null if no path
    */
-  public findPath(startPoint: Vector2, endPoint: Vector2): Vector2[] {
+  public findPath(startPoint: ReadonlyVector2, endPoint: ReadonlyVector2): Vector2[] {
     let startPoly: NavPoly = null;
     let endPoly: NavPoly = null;
     let startDistance: number = Number.MAX_VALUE;
