@@ -1,6 +1,6 @@
 {
   "name": "@prodigy/navmesh",
-  "version": "1.1.0",
+  "version": "1.1.0-alpha-16d9e98",
   "description": "A library for fast pathfinding using navigation meshes in JS",
   "main": "./dist/index.js",
   "types": "./dts/index.d.ts",
@@ -9,7 +9,7 @@
     "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "dependencies": {
-    "@prodigy/game-framework": "file:../prodigy-game-framework/prodigy-game-framework-7.0.0.tgz",
+    "@prodigy/game-framework": "7.0.0-alpha-c76887f",
     "javascript-astar": "^0.4.1"
   },
   "devDependencies": {
