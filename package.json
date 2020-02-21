@@ -9,7 +9,7 @@
     "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "dependencies": {
-    "@prodigy/game-framework": "7.0.0",
+    "@prodigy/game-framework": "7.0.0-alpha-759bdb4",
     "javascript-astar": "^0.4.1"
   },
   "devDependencies": {
