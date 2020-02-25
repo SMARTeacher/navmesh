@@ -4,6 +4,8 @@ node_modules
 *.log
 package-lock.json
 *.tgz
+dist
+dts
 
 # Ignore files used for publishing to gh-pages
 .publish

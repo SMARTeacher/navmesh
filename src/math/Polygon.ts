@@ -1,5 +1,5 @@
 import { Line } from './Line';
-import { Vector2 } from './Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 
 /**
  * Stripped down version of Phaser's Polygon with just the functionality needed for navmeshes

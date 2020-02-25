@@ -1,6 +1,6 @@
 import { Line } from './math/Line';
 import { Polygon } from './math/Polygon';
-import { Vector2 } from './math/Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 
 /**
  * A class that represents a navigable polygon with a navmesh. It is built on top of a
@@ -71,7 +71,7 @@ export class NavPoly {
   public calculateRadius(): number {
     let boundingRadius: number = 0;
     for (const point of this.polygon.points) {
-      const d: number = this.centroid.distance(point);
+      const d: number = Math.sqrt(this.centroid.getDistanceSq(point));
       if (d > boundingRadius) { boundingRadius = d; }
     }
     return boundingRadius;
@@ -102,7 +102,7 @@ export class NavPoly {
     return this.weight === 0;
   }
   public centroidDistance(navPolygon: NavPoly): number {
-    return this.centroid.distance(navPolygon.centroid);
+    return Math.sqrt(this.centroid.getDistanceSq(navPolygon.centroid));
   }
   public getCost(navPolygon: NavPoly): number {
     return this.centroidDistance(navPolygon);

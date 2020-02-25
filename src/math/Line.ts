@@ -1,4 +1,4 @@
-import { Vector2 } from './Vector2';
+import { Vector2 } from '@prodigy/game-framework';
 
 /**
  * Stripped down version of Phaser's Line with just the functionality needed for navmeshes
