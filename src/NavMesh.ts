@@ -17,7 +17,7 @@ import { Utils } from './Utils';
  *   channel. Equivalent to having a string snaking through a hallway and then pulling it taut.
  */
 export class NavMesh {
-  private _fromPolySearchRadius;
+  private _fromPolySearchRadius: number;
   private _meshShrinkAmount: number;
   private _navPolygons: NavPoly[];
   private _graph: NavGraph;
@@ -30,7 +30,7 @@ export class NavMesh {
    * @param [meshShrinkAmount=0] The amount (in pixels) that the navmesh has been
    * shrunk around obstacles (a.k.a the amount obstacles have been expanded)
    */
-  public constructor(meshPolygonPoints: Vector2[][], meshShrinkAmount: number = 0, fromPolySearchRadius = 0) {
+  public constructor(meshPolygonPoints: Vector2[][], meshShrinkAmount: number = 0, fromPolySearchRadius: number = 0) {
     this._meshShrinkAmount = meshShrinkAmount;
     this._fromPolySearchRadius = fromPolySearchRadius;
 
