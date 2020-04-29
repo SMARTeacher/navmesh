@@ -4,6 +4,8 @@ import { Vector2 } from '@prodigy/game-framework';
  * Stripped down version of Phaser's Line with just the functionality needed for navmeshes
  */
 export class Line {
+  private static EPSILON: number = 0.00000001;
+
   public start: Vector2;
   public end: Vector2;
 
@@ -34,6 +36,6 @@ export class Line {
 
   public pointOnLine(x: number, y: number): boolean {
     // Compare slope of line start -> xy to line start -> line end
-    return (x - this.left) * (this.bottom - this.top) === (this.right - this.left) * (y - this.top);
+    return Math.abs((x - this.left) * (this.bottom - this.top) - (this.right - this.left) * (y - this.top)) < Line.EPSILON;
   }
 }
