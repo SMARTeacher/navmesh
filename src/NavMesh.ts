@@ -17,6 +17,7 @@ import { Utils } from './Utils';
  *   channel. Equivalent to having a string snaking through a hallway and then pulling it taut.
  */
 export class NavMesh {
+  private _fromPolySearchRadius;
   private _meshShrinkAmount: number;
   private _navPolygons: NavPoly[];
   private _graph: NavGraph;
@@ -29,8 +30,9 @@ export class NavMesh {
    * @param [meshShrinkAmount=0] The amount (in pixels) that the navmesh has been
    * shrunk around obstacles (a.k.a the amount obstacles have been expanded)
    */
-  public constructor(meshPolygonPoints: Vector2[][], meshShrinkAmount: number = 0) {
+  public constructor(meshPolygonPoints: Vector2[][], meshShrinkAmount: number = 0, fromPolySearchRadius = 0) {
     this._meshShrinkAmount = meshShrinkAmount;
+    this._fromPolySearchRadius = fromPolySearchRadius;
 
     const newPolys: Polygon[] = meshPolygonPoints.map((polyPoints: Vector2[]) => {
       const vectors: Vector2[] = polyPoints.map((p: Vector2) => new Vector2(p.x, p.y));
@@ -135,16 +137,17 @@ export class NavMesh {
 
     // If the start point wasn't inside a polygon, run a more liberal check that allows a point
     // to be within meshShrinkAmount radius of a polygon
-    if (!startPoly && this._meshShrinkAmount > 0) {
+    const startSearchRadius: number = this._fromPolySearchRadius + this._meshShrinkAmount;
+    if (!startPoly && startSearchRadius > 0) {
       for (const navPoly of this._navPolygons) {
         // Check if point is within bounding circle to avoid extra projection calculations
-        r = navPoly.boundingRadius + this._meshShrinkAmount;
+        r = navPoly.boundingRadius + startSearchRadius;
         d = Math.sqrt(navPoly.centroid.getDistanceSq(startVector));
         if (d <= r) {
           // Check if projected point is within range of a polgyon and is closer than the
           // previous point
           const { distance }: { distance: number} = this._projectPointToPolygon(startVector, navPoly);
-          if (distance <= this._meshShrinkAmount && distance < startDistance) {
+          if (distance <= startSearchRadius && distance < startDistance) {
             startPoly = navPoly;
             startDistance = distance;
           }
