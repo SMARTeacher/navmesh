@@ -144,7 +144,7 @@ export class NavMesh {
         r = navPoly.boundingRadius + startSearchRadius;
         d = Math.sqrt(navPoly.centroid.getDistanceSq(startVector));
         if (d <= r) {
-          // Check if projected point is within range of a polgyon and is closer than the
+          // Check if projected point is within range of a polygon and is closer than the
           // previous point
           const { distance }: { distance: number} = this._projectPointToPolygon(startVector, navPoly);
           if (distance <= startSearchRadius && distance < startDistance) {
